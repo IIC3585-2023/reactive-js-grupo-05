@@ -1,0 +1,19 @@
+#game {
+  box-shadow: 10px 10px 10px black;
+
+  /* esto quita el antialiasing */
+  image-rendering: optimizespeed; /* stop smoothing, give me speed  */
+  image-rendering: -moz-crisp-edges; /* firefox                        */
+  image-rendering: -o-crisp-edges; /* opera                          */
+  image-rendering: -webkit-optimize-contrast; /* chrome (and eventually safari) */
+  image-rendering: pixelated; /* universal support since 2021   */
+  image-rendering: optimize-contrast; /* css3 proposed                  */
+  -ms-interpolation-mode: nearest-neighbor; /* ie8+                           */
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  height: 100vh;
+  overflow: hidden;
+}
