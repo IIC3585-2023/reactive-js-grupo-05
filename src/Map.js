@@ -1,11 +1,14 @@
 import MovingDirection from './MovingDirection.js';
 
 export default class Map {
-  constructor(tileSize) {
+  constructor(tileSize, ctx) {
     this.wall = new Image();
     this.wall.src = 'src/wall.png';
     this.tileSize = tileSize;
     // this.tiles = this.generatePacmanMap(15, 12);
+    this.wall.onload = () => {
+      this.draw(ctx);
+    };
   }
 
   tiles = [
