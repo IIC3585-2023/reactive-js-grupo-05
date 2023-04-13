@@ -20,8 +20,37 @@ const {
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
 ctx.fillStyle = 'black';
-canvas.width = SIZE * tiles[0].length;
-canvas.height = SIZE * tiles.length;
+//
+// canvas.width = SIZE * tiles[0].length;
+// canvas.height = SIZE * tiles.length;
+
+const resizeCanvas = () => {
+  const NUM_COLS = tiles[0].length;
+  const NUM_ROWS = tiles.length;
+  const aspectRatio = NUM_COLS / NUM_ROWS;
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+  const screenAspectRatio = width / height;
+
+  let scale;
+
+  if (screenAspectRatio > aspectRatio) {
+    scale = height / (SIZE * NUM_ROWS);
+  } else {
+    scale = width / (SIZE * NUM_COLS);
+  }
+
+  canvas.width = SIZE * NUM_COLS * scale;
+  canvas.height = SIZE * NUM_ROWS * scale;
+
+  canvas.style.width = `${canvas.width}px`;
+  canvas.style.height = `${canvas.height}px`;
+
+  ctx.scale(scale, scale);
+};
+
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
 
 // --------------------------------------------------------------
 // --------------------------------------------------------------

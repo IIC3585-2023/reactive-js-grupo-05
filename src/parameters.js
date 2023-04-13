@@ -1,4 +1,4 @@
-const SIZE = 64;
+const SIZE = 50;
 
 const MOVING_DIRECTION = {
   up: 'up',
