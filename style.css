@@ -1,7 +1,4 @@
-#game {
-  box-shadow: 10px 10px 10px black;
-
-  /* esto quita el antialiasing */
+* {
   image-rendering: optimizespeed; /* stop smoothing, give me speed  */
   image-rendering: -moz-crisp-edges; /* firefox                        */
   image-rendering: -o-crisp-edges; /* opera                          */
@@ -10,8 +7,15 @@
   image-rendering: optimize-contrast; /* css3 proposed                  */
   -ms-interpolation-mode: nearest-neighbor; /* ie8+                           */
 }
+#game {
+  /* esto quita el antialiasing */
+}
 
 body {
+  /* background-color: black; */
+  background: url("background.gif") no-repeat center center fixed;
+  background-size: cover;
+  animation: glitch 10s ease-in-out infinite;
   padding: 0;
   margin: 0;
   display: flex;
@@ -19,4 +23,40 @@ body {
   align-items: center;
   height: 100vh;
   overflow: hidden;
+}
+
+@keyframes glitch {
+  0% {
+    transform: translate(0);
+  }
+  10% {
+    transform: translate(-5px, 5px);
+  }
+  20% {
+    transform: translate(5px, -5px);
+  }
+  30% {
+    transform: translate(-5px, 5px);
+  }
+  40% {
+    transform: translate(-5px, -5px);
+  }
+  50% {
+    transform: translate(5px, -5px);
+  }
+  60% {
+    transform: translate(-5px, 5px);
+  }
+  70% {
+    transform: translate(5px, -5px);
+  }
+  80% {
+    transform: translate(-5px, 5px);
+  }
+  90% {
+    transform: translate(5px, -5px);
+  }
+  100% {
+    transform: translate(0);
+  }
 }

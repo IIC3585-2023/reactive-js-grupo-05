@@ -7,7 +7,7 @@ import {
   P2_START,
   PACMAN_I,
 } from './parameters.js';
-import { drawTiles, tiles } from './TilesRender.js';
+import { drawTiles, tiles, staticEffect } from './TilesRender.js';
 import { updatePlayersPosition } from './TilesHandler.js';
 
 const {
@@ -20,6 +20,8 @@ const {
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
 ctx.fillStyle = 'black';
+
+// ctx.imageSmoothingEnabled = false;
 //
 // canvas.width = SIZE * tiles[0].length;
 // canvas.height = SIZE * tiles.length;
@@ -31,6 +33,7 @@ const resizeCanvas = () => {
   const width = window.innerWidth;
   const height = window.innerHeight;
   const screenAspectRatio = width / height;
+
 
   let scale;
 
@@ -131,4 +134,7 @@ const keydownP2 = fromEvent(document, 'keydown')
     game.next(currentGame);
   });
 
-game.subscribe((currentGame) => drawTiles(currentGame, ctx));
+game.subscribe((currentGame) => {
+  drawTiles(currentGame, ctx);
+  staticEffect(ctx, canvas.width, canvas.height);
+});
