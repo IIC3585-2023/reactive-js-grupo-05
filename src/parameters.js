@@ -77,6 +77,18 @@ const P1_START = {
   },
 };
 
+const ENEMY1 = new Image();
+ENEMY1.src = './src/sprites/enemy-1.png';
+
+const ENEMY2 = new Image();
+ENEMY2.src = './src/sprites/enemy-2.png';
+
+const ENEMY3 = new Image();
+ENEMY3.src = './src/sprites/enemy-3.png';
+
+const ENEMY4 = new Image();
+ENEMY4.src = './src/sprites/enemy-4.png';
+
 const P2_START = {
   x: 11,
   y: 9,
@@ -100,6 +112,41 @@ const P2_START = {
   },
 };
 
+const ENEMIES = [
+  {
+    x: 1,
+    y: 10,
+    direction: MOVING_DIRECTION.right,
+    alive: true,
+    image: ENEMY1,
+    name: 'E1',
+  },
+  {
+    x: 5,
+    y: 17,
+    direction: MOVING_DIRECTION.right,
+    alive: true,
+    image: ENEMY2,
+    name: 'E2',
+  },
+  {
+    x: 12,
+    y: 15,
+    direction: MOVING_DIRECTION.right,
+    alive: true,
+    image: ENEMY3,
+    name: 'E3',
+  },
+  {
+    x: 18,
+    y: 17,
+    direction: MOVING_DIRECTION.right,
+    alive: true,
+    image: ENEMY4,
+    name: 'E4',
+  },
+];
+
 export {
   SIZE,
   MOVING_DIRECTION,
@@ -113,4 +160,5 @@ export {
   PORTAL1P2,
   PORTAL2P1,
   PORTAL2P2,
+  ENEMIES,
 };
