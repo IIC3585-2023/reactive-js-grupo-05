@@ -8,6 +8,10 @@ const drawTileWall = (ctx, column, row) => {
   ctx.drawImage(WALL_I, column * SIZE, row * SIZE, SIZE, SIZE);
 };
 
+const drawPortal = (ctx, column, row, sprite) => {
+  ctx.drawImage(sprite, column * SIZE, row * SIZE, SIZE, SIZE);
+};
+
 const drawTileEmpty = (ctx, column, row) => {
   ctx.fillRect(column * SIZE, row * SIZE, SIZE, SIZE);
 };
@@ -22,6 +26,18 @@ const drawTile = (tile, ctx, columnIndex, rowIndex, p1, p2) => {
       break;
     case 'P1':
       drawTilePacman(ctx, columnIndex, rowIndex, p1);
+      break;
+    case 'P1P1':
+      drawPortal(ctx, columnIndex, rowIndex, p1.portal1.image);
+      break;
+    case 'P2P1':
+      drawPortal(ctx, columnIndex, rowIndex, p1.portal2.image);
+      break;
+    case 'P1P2':
+      drawPortal(ctx, columnIndex, rowIndex, p2.portal1.image);
+      break;
+    case 'P2P2':
+      drawPortal(ctx, columnIndex, rowIndex, p2.portal2.image);
       break;
     case 'P2':
       drawTilePacman(ctx, columnIndex, rowIndex, p2);
@@ -58,7 +74,6 @@ const staticEffect = (ctx, screenWidth, screenHeight) => {
   }
 
   ctx.putImageData(imageData, 0, 0);
-
 };
 
 const tiles = [

@@ -34,7 +34,6 @@ const resizeCanvas = () => {
   const height = window.innerHeight;
   const screenAspectRatio = width / height;
 
-
   let scale;
 
   if (screenAspectRatio > aspectRatio) {
@@ -61,6 +60,12 @@ resizeCanvas();
 tiles[P1_START.y][P1_START.x] = P1_START.name;
 tiles[P2_START.y][P2_START.x] = P2_START.name;
 
+tiles[P1_START.portal1.y][P1_START.portal1.x] = 'P1P1';
+tiles[P1_START.portal2.y][P1_START.portal2.x] = 'P2P1';
+
+tiles[P2_START.portal1.y][P2_START.portal1.x] = 'P1P2';
+tiles[P2_START.portal2.y][P2_START.portal2.x] = 'P2P2';
+
 const game = new BehaviorSubject({
   tiles,
   p1: P1_START,
@@ -70,10 +75,16 @@ const game = new BehaviorSubject({
 timer(0, 500)
   .pipe(
     withLatestFrom(game),
-    map(([_, currentGame]) => ({
-      ...currentGame,
-      tiles: updatePlayersPosition(currentGame),
-    })),
+    map(([_, currentGame]) => {
+      const [newTiles, newPlayer1, newPlayer2] = updatePlayersPosition(currentGame);
+      // test
+      return {
+        ...currentGame,
+        tiles: newTiles,
+        p1: newPlayer1,
+        p2: newPlayer2,
+      };
+    }),
   )
   .subscribe((currentGame) => {
     // console.log(updatePlayersPosition(currentGame));
@@ -81,7 +92,7 @@ timer(0, 500)
     // drawTiles(currentGame, ctx);
   });
 
-interval(300)
+interval(100)
   .pipe(
     withLatestFrom(game),
     map(([time, currentGame]) => {

@@ -43,6 +43,17 @@ const PACMAN_I = {
   circle: PACMAN_CIRCLE,
 };
 
+const PORTAL1P1 = new Image();
+PORTAL1P1.src = '../sprites/portal-p1-blue.png';
+
+const PORTAL2P1 = new Image();
+PORTAL2P1.src = '../sprites/portal-p1-orange.png';
+
+const PORTAL1P2 = new Image();
+PORTAL1P2.src = '../sprites/portal-p2-blue.png';
+const PORTAL2P2 = new Image();
+PORTAL2P2.src = '../sprites/portal-p2-orange.png';
+
 const P1_START = {
   x: 1,
   y: 1,
@@ -50,6 +61,20 @@ const P1_START = {
   alive: true,
   image: PACMAN_I.up,
   name: 'P1',
+  portal1: {
+    x: 0,
+    y: 4,
+    image: PORTAL1P1,
+    name: 'P1P1',
+    exitDirection: MOVING_DIRECTION.right,
+  },
+  portal2: {
+    x: 4,
+    y: 0,
+    image: PORTAL2P1,
+    name: 'P2P1',
+    exitDirection: MOVING_DIRECTION.down,
+  },
 };
 
 const P2_START = {
@@ -59,6 +84,20 @@ const P2_START = {
   alive: true,
   image: PACMAN_I.up,
   name: 'P2',
+  portal1: {
+    x: 0,
+    y: 6,
+    image: PORTAL1P2,
+    name: 'P1P2',
+    exitDirection: MOVING_DIRECTION.right,
+  },
+  portal2: {
+    x: 6,
+    y: 0,
+    image: PORTAL2P2,
+    name: 'P2P2',
+    exitDirection: MOVING_DIRECTION.down,
+  },
 };
 
 export {
@@ -70,4 +109,8 @@ export {
   PACMAN_I,
   P1_START,
   P2_START,
+  PORTAL1P1,
+  PORTAL1P2,
+  PORTAL2P1,
+  PORTAL2P2,
 };
