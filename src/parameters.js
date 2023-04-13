@@ -1,30 +1,28 @@
 const SIZE = 64;
 
 const MOVING_DIRECTION = {
-    up: 'up',
-    down: 'down',
-    left: 'left',
-    right: 'right',
-  };
+  up: 'up',
+  down: 'down',
+  left: 'left',
+  right: 'right',
+};
 
 const DIRECTIONSP1 = {
-    ArrowUp: MOVING_DIRECTION.up,
-    ArrowDown: MOVING_DIRECTION.down,
-    ArrowLeft: MOVING_DIRECTION.left,
-    ArrowRight: MOVING_DIRECTION.right,
-  }
+  ArrowUp: MOVING_DIRECTION.up,
+  ArrowDown: MOVING_DIRECTION.down,
+  ArrowLeft: MOVING_DIRECTION.left,
+  ArrowRight: MOVING_DIRECTION.right,
+};
 
 const DIRECTIONSP2 = {
-    w: MOVING_DIRECTION.up,
-    s: MOVING_DIRECTION.down,
-    a: MOVING_DIRECTION.left,
-    d: MOVING_DIRECTION.right,
-  }
-
-
+  w: MOVING_DIRECTION.up,
+  s: MOVING_DIRECTION.down,
+  a: MOVING_DIRECTION.left,
+  d: MOVING_DIRECTION.right,
+};
 
 const WALL_I = new Image();
-WALL_I.src = '../sprites/wall.png'
+WALL_I.src = '../sprites/wall.png';
 
 const PACMAN_UP = new Image();
 PACMAN_UP.src = '../sprites/pacman-up.png';
@@ -50,20 +48,22 @@ const P1_START = {
   y: 1,
   direction: MOVING_DIRECTION.right,
   alive: true,
-  image: PACMAN_I.up
+  image: PACMAN_I.up,
+  name: 'P1',
 };
 
 const P2_START = {
-  x: 13,
-  y: 11,
+  x: 11,
+  y: 9,
   direction: MOVING_DIRECTION.right,
   alive: true,
-  image: PACMAN_I.up
+  image: PACMAN_I.up,
+  name: 'P2',
 };
 
 export {
-  SIZE, 
-  MOVING_DIRECTION, 
+  SIZE,
+  MOVING_DIRECTION,
   DIRECTIONSP1,
   DIRECTIONSP2,
   WALL_I,
