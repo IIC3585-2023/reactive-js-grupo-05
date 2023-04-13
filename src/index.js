@@ -74,8 +74,8 @@ timer(0, 500)
   )
   .subscribe((currentGame) => {
     // console.log(updatePlayersPosition(currentGame));
-    // game.next(currentGame);
-    drawTiles(currentGame, ctx);
+    game.next(currentGame);
+    // drawTiles(currentGame, ctx);
   });
 
 interval(300)
@@ -94,7 +94,7 @@ interval(300)
     }),
   )
   .subscribe((currentGame) => {
-    drawTiles(currentGame, ctx);
+    // drawTiles(currentGame, ctx);
     game.next(currentGame);
   });
 
@@ -130,3 +130,5 @@ const keydownP2 = fromEvent(document, 'keydown')
     drawTiles(currentGame, ctx);
     game.next(currentGame);
   });
+
+game.subscribe((currentGame) => drawTiles(currentGame, ctx));
