@@ -78,7 +78,7 @@ timer(0, 500)
     drawTiles(currentGame, ctx);
   });
 
-interval(150)
+interval(300)
   .pipe(
     withLatestFrom(game),
     map(([time, currentGame]) => {
@@ -93,7 +93,10 @@ interval(150)
       return { ...currentGame, p1, p2 };
     }),
   )
-  .subscribe((currentGame) => game.next(currentGame));
+  .subscribe((currentGame) => {
+    drawTiles(currentGame, ctx);
+    game.next(currentGame);
+  });
 
 const keydownP1 = fromEvent(document, 'keydown')
   .pipe(
@@ -108,7 +111,6 @@ const keydownP1 = fromEvent(document, 'keydown')
     }),
   )
   .subscribe((currentGame) => {
-    drawTiles(currentGame, ctx);
     game.next(currentGame);
   });
 
