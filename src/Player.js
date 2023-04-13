@@ -24,7 +24,7 @@ export default class Player {
   suscribe() {
     const { toggleSprite, draw, changeDirection, move } = this;
     this.toggleSpriteSubscription = timer(0, 13).subscribe(toggleSprite.bind(this));
-    this.drawSubscription = timer(0, 13).subscribe(draw.bind(this));
+    // this.drawSubscription = timer(0, 13).subscribe(draw.bind(this));
     fromEvent(document, 'keydown')
       .pipe(filter((event) => Object.values(this.keys).includes(event.key)))
       .subscribe((event) => {
@@ -37,11 +37,14 @@ export default class Player {
   }
 
   toggleSprite() {
-    if (this.toggleCont < 7) {
+    if (this.toggleCont < 12) {
       this.sprite.src = `sprites/${MovingDirection[this.direction]}.png`;
       this.toggleCont += 1;
-    } else {
+    } else if (this.toggleCont < 15) {
       this.sprite.src = 'sprites/circle.png';
+      this.toggleCont += 1;
+    }
+    else {
       this.toggleCont = 0;
     }
   }
