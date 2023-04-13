@@ -22,18 +22,18 @@ const DIRECTIONSP2 = {
 };
 
 const WALL_I = new Image();
-WALL_I.src = '../images/wall.png';
+WALL_I.src = './src/sprites/wall.png';
 
 const PACMAN_UP = new Image();
-PACMAN_UP.src = '../images/pacman-up.png';
+PACMAN_UP.src = './src/sprites/pacman-up.png';
 const PACMAN_DOWN = new Image();
-PACMAN_DOWN.src = '../images/pacman-down.png';
+PACMAN_DOWN.src = './src/sprites/pacman-down.png';
 const PACMAN_LEFT = new Image();
-PACMAN_LEFT.src = '../images/pacman-left.png';
+PACMAN_LEFT.src = './src/sprites/pacman-left.png';
 const PACMAN_RIGHT = new Image();
-PACMAN_RIGHT.src = '../images/pacman-right.png';
+PACMAN_RIGHT.src = './src/sprites/pacman-right.png';
 const PACMAN_CIRCLE = new Image();
-PACMAN_CIRCLE.src = '../images/pacman-circle.png';
+PACMAN_CIRCLE.src = './src/sprites/pacman-circle.png';
 
 const PACMAN_I = {
   up: PACMAN_UP,
@@ -44,15 +44,15 @@ const PACMAN_I = {
 };
 
 const PORTAL1P1 = new Image();
-PORTAL1P1.src = '../images/portal-p1-blue.png';
+PORTAL1P1.src = './src/sprites/portal-p1-blue.png';
 
 const PORTAL2P1 = new Image();
-PORTAL2P1.src = '../images/portal-p1-orange.png';
+PORTAL2P1.src = './src/sprites/portal-p1-orange.png';
 
 const PORTAL1P2 = new Image();
-PORTAL1P2.src = '../images/portal-p2-blue.png';
+PORTAL1P2.src = './src/sprites/portal-p2-blue.png';
 const PORTAL2P2 = new Image();
-PORTAL2P2.src = '../images/portal-p2-orange.png';
+PORTAL2P2.src = './src/sprites/portal-p2-orange.png';
 
 const P1_START = {
   x: 1,
