@@ -127,7 +127,7 @@ const keydownP2 = fromEvent(document, 'keydown')
     }),
   )
   .subscribe((currentGame) => {
-    drawTiles(currentGame, ctx);
+    // drawTiles(currentGame, ctx);
     game.next(currentGame);
   });
 
