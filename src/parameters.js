@@ -8,6 +8,13 @@ const MOVING_DIRECTION = {
 };
 
 const DIRECTIONSP1 = {
+  w: MOVING_DIRECTION.up,
+  s: MOVING_DIRECTION.down,
+  a: MOVING_DIRECTION.left,
+  d: MOVING_DIRECTION.right,
+};
+
+const DIRECTIONSP2 = {
   ArrowUp: MOVING_DIRECTION.up,
   ArrowDown: MOVING_DIRECTION.down,
   ArrowLeft: MOVING_DIRECTION.left,
@@ -15,15 +22,13 @@ const DIRECTIONSP1 = {
 };
 
 const POWERSP1 = {
-  q: 'portal1',
-  e: 'portal2',
+  c: 'portal1',
+  v: 'portal2',
 };
 
-const DIRECTIONSP2 = {
-  w: MOVING_DIRECTION.up,
-  s: MOVING_DIRECTION.down,
-  a: MOVING_DIRECTION.left,
-  d: MOVING_DIRECTION.right,
+const POWERSP2 = {
+  o: 'portal1',
+  p: 'portal2',
 };
 
 const WALL_I = new Image();
@@ -167,4 +172,5 @@ export {
   PORTAL2P2,
   ENEMIES,
   POWERSP1,
+  POWERSP2,
 };

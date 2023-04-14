@@ -3,6 +3,7 @@ import {
   DIRECTIONSP1,
   DIRECTIONSP2,
   POWERSP1,
+  POWERSP2,
   // MOVING_DIRECTION,
   P1_START,
   P2_START,
@@ -165,6 +166,37 @@ const powersP1 = fromEvent(document, 'keydown')
         return {
           ...currentGame,
           p1: { ...p1, portal2: newPortal },
+          tiles: newTiles,
+        };
+      }
+      return currentGame;
+    }),
+  )
+  .subscribe((currentGame) => {
+    game.next(currentGame);
+  });
+
+
+const powersP2 = fromEvent(document, 'keydown')
+  .pipe(
+    filter(({ key }) => Object.keys(POWERSP2).includes(key)),
+    withLatestFrom(game),
+    map(([currentKeydown, currentGame]) => {
+      const { p2, tiles } = currentGame;
+      let newTiles;
+      let newPortal;
+      if (POWERSP2[currentKeydown.key] === 'portal1') {
+        [newTiles, newPortal] = shootPortal(p2, p2.portal1, tiles);
+        return {
+          ...currentGame,
+          p2: { ...p2, portal1: newPortal },
+          tiles: newTiles,
+        };
+      } if (POWERSP2[currentKeydown.key] === 'portal2') {
+        [newTiles, newPortal] = shootPortal(p2, p2.portal2, tiles);
+        return {
+          ...currentGame,
+          p2: { ...p2, portal2: newPortal },
           tiles: newTiles,
         };
       }
