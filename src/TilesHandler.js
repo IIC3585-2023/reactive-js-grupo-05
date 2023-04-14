@@ -16,11 +16,10 @@ const didCollideWithEnvironment = ({ x, y, direction }, tiles) => {
   }
 };
 
-const CollideWithPacman = ({ x, y, direction }, tiles, p1, p2) => {
+const collideWithPacman = ({ x, y, direction }, tiles, player) => {
   let newX = x;
   let newY = y;
-  let newP1 = p1;
-  let newP2 = p2;
+  let newPlayer = player;
   switch (direction) {
     case MOVING_DIRECTION.right:
       newX += 1;
@@ -37,14 +36,16 @@ const CollideWithPacman = ({ x, y, direction }, tiles, p1, p2) => {
     default:
       break;
   }
-  if (tiles[newY][newX] === p1.name) {
-    newP1 = { ...newP1, alive: false };
-    console.log("Colision pacman-1 fantasma");
-  } else if (tiles[newY][newX] === p2.name) {
-    newP2 = { ...newP2, alive: false };
-    console.log("Colision pacman-2 fantasma");
+  if (tiles[newY][newX] === newPlayer.name) {
+    newPlayer = {
+      ...newPlayer,
+      alive: false,
+      x: -1,
+      y: -1,
+    };
+    // console.log('Colision pacman fantasma', player.name);
   }
-  return [newP1, newP2];
+  return newPlayer;
 };
 
 const didCollideWithPortal = ({ x, y, direction }, tiles, portal) => {
@@ -99,6 +100,9 @@ const warpPlayerPosition = (player, tiles, portal) => {
 const updatePlayerPosition = (player, tiles) => {
   const newTiles = tiles;
   const newPlayer = player;
+  if (!player.alive) {
+    return [newTiles, newPlayer];
+  }
   if (!didCollideWithEnvironment(newPlayer, newTiles)) {
     const { x, y, direction } = newPlayer;
     newTiles[y][x] = 0;
@@ -136,26 +140,15 @@ const updatePlayersPosition = ({ p1, p2, tiles }) => {
   let newTiles = tiles;
   let newPlayer1 = p1;
   let newPlayer2 = p2;
-  if (p1.alive) {
-    [newTiles, newPlayer1] = updatePlayerPosition(p1, newTiles);
-  } else {
-    newTiles[p1.y][p1.x] = 0;
-    newPlayer1.x = -1;
-    newPlayer1.y = -1;
-  }
-  if (p2.alive) {
-    [newTiles, newPlayer2] = updatePlayerPosition(p2, newTiles);
-  } else {
-    newTiles[p2.y][p2.x] = 0;
-    newPlayer2.x = -1;
-    newPlayer2.y = -1;
-  }
+  [newTiles, newPlayer1] = updatePlayerPosition(p1, newTiles);
+  [newTiles, newPlayer2] = updatePlayerPosition(p2, newTiles);
   return [newTiles, newPlayer1, newPlayer2];
 };
 
 const updateEnemyPosition = (enemy, tiles, p1, p2) => {
   const newTiles = tiles;
   const newEnemy = enemy;
+  // console.log(enemy, p1, p2);
   if (!didCollideWithEnvironment(newEnemy, newTiles)) {
     const { x, y, direction } = newEnemy;
     newTiles[y][x] = 0;
@@ -178,21 +171,30 @@ const updateEnemyPosition = (enemy, tiles, p1, p2) => {
     newTiles[newEnemy.y][newEnemy.x] = newEnemy.name;
     return [newTiles, newEnemy, p1, p2];
   }
-  const [newP1, newP2] = CollideWithPacman(enemy, tiles, p1, p2);
+  const newP1 = collideWithPacman(enemy, tiles, p1);
+  const newP2 = collideWithPacman(enemy, tiles, p2);
+  // console.log('test', newP2);
+
   newEnemy.direction = MOVING_DIRECTION[
     Object.keys(MOVING_DIRECTION)[Math.floor(Math.random() * 4)]
   ];
   return [newTiles, newEnemy, newP1, newP2];
-
 };
 
 const updateEnemiesPosition = (game) => {
-  const { enemies, tiles, p1, p2 } = game;
+  const {
+    enemies, tiles, p1, p2,
+  } = game;
   let [newTiles, newP1, newP2] = [tiles, p1, p2];
   let newEnemy;
   const newEnemies = [];
   for (let i = 0; i < enemies.length; i += 1) {
-    [newTiles, newEnemy, newP1, newP2] = updateEnemyPosition(enemies[i], newTiles, newP1, newP2);
+    [newTiles, newEnemy, newP1, newP2] = updateEnemyPosition(
+      enemies[i],
+      newTiles,
+      newP1,
+      newP2,
+    );
     newEnemies.push(newEnemy);
   }
   return [newTiles, newEnemies, newP1, newP2];
