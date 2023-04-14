@@ -2,6 +2,7 @@ import {
   SIZE,
   DIRECTIONSP1,
   DIRECTIONSP2,
+  POWERSP1,
   // MOVING_DIRECTION,
   P1_START,
   P2_START,
@@ -9,7 +10,12 @@ import {
   ENEMIES,
 } from './parameters.js';
 import { drawTiles, tiles, staticEffect } from './TilesRender.js';
-import { updatePlayersPosition, updateEnemiesPosition } from './TilesHandler.js';
+import {
+  updatePlayersPosition,
+  updateEnemiesPosition,
+  getWallCoords,
+  shootPortal,
+} from './TilesHandler.js';
 
 const {
   fromEvent, merge, filter, pipe, timer, BehaviorSubject, interval,
@@ -85,7 +91,10 @@ timer(0, 500)
       let [newTiles, newPlayer1, newPlayer2] = updatePlayersPosition(currentGame);
       let newEnemies = [];
       [newTiles, newEnemies, newPlayer1, newPlayer2] = updateEnemiesPosition({
-        ...currentGame, tiles: newTiles, p1: newPlayer1, p2: newPlayer2,
+        ...currentGame,
+        tiles: newTiles,
+        p1: newPlayer1,
+        p2: newPlayer2,
       });
       return {
         ...currentGame,
@@ -130,6 +139,36 @@ const keydownP1 = fromEvent(document, 'keydown')
         ...currentGame,
         p1: { ...p1, direction: DIRECTIONSP1[currentKeydown.key] },
       };
+    }),
+  )
+  .subscribe((currentGame) => {
+    game.next(currentGame);
+  });
+
+const powersP1 = fromEvent(document, 'keydown')
+  .pipe(
+    filter(({ key }) => Object.keys(POWERSP1).includes(key)),
+    withLatestFrom(game),
+    map(([currentKeydown, currentGame]) => {
+      const { p1, tiles } = currentGame;
+      let newTiles;
+      let newPortal;
+      if (POWERSP1[currentKeydown.key] === 'portal1') {
+        [newTiles, newPortal] = shootPortal(p1, p1.portal1, tiles);
+        return {
+          ...currentGame,
+          p1: { ...p1, portal1: newPortal },
+          tiles: newTiles,
+        };
+      } if (POWERSP1[currentKeydown.key] === 'portal2') {
+        [newTiles, newPortal] = shootPortal(p1, p1.portal2, tiles);
+        return {
+          ...currentGame,
+          p1: { ...p1, portal2: newPortal },
+          tiles: newTiles,
+        };
+      }
+      return currentGame;
     }),
   )
   .subscribe((currentGame) => {

@@ -14,6 +14,11 @@ const DIRECTIONSP1 = {
   ArrowRight: MOVING_DIRECTION.right,
 };
 
+const POWERSP1 = {
+  q: 'portal1',
+  e: 'portal2',
+};
+
 const DIRECTIONSP2 = {
   w: MOVING_DIRECTION.up,
   s: MOVING_DIRECTION.down,
@@ -161,4 +166,5 @@ export {
   PORTAL2P1,
   PORTAL2P2,
   ENEMIES,
+  POWERSP1,
 };
