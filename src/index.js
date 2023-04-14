@@ -4,7 +4,6 @@ import {
   DIRECTIONSP2,
   POWERSP1,
   POWERSP2,
-  // MOVING_DIRECTION,
   P1_START,
   P2_START,
   PACMAN_I,
@@ -22,17 +21,34 @@ const {
   fromEvent, merge, filter, pipe, timer, BehaviorSubject, interval,
 } = rxjs;
 const {
-  sample, mapTo, withLatestFrom, map,
+  sample, mapTo, withLatestFrom, map, takeUntil, skipUntil
 } = rxjs.operators;
 
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
-ctx.fillStyle = 'black';
 
 // ctx.imageSmoothingEnabled = false;
 //
 // canvas.width = SIZE * tiles[0].length;
 // canvas.height = SIZE * tiles.length;
+
+const drawText = () => {
+  const centerX = canvas.width / 2;
+  const centerY = canvas.height / 2;
+
+  // Set font
+  ctx.font = "150px 'Courier New'";
+  ctx.textAlign = "center";
+  ctx.fillStyle = 'white';
+  ctx.strokeStyle = "black";
+  ctx.lineWidth = 5;
+  ctx.strokeText("START", centerX, centerY);
+  ctx.fillText("START", centerX, centerY);
+}
+
+const clearCanvas = () => {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
 
 const resizeCanvas = () => {
   const NUM_COLS = tiles[0].length;
@@ -61,6 +77,8 @@ const resizeCanvas = () => {
 
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
+drawText();
+ctx.fillStyle = 'black';
 
 // --------------------------------------------------------------
 // --------------------------------------------------------------
@@ -83,10 +101,13 @@ const game = new BehaviorSubject({
   p1: P1_START,
   p2: P2_START,
   enemies: ENEMIES,
+  started: false,
 });
 
+// GAME TICKS
 timer(0, 500)
   .pipe(
+    skipUntil(game.pipe(filter((currentGame) => currentGame.started))),
     withLatestFrom(game),
     map(([_, currentGame]) => {
       let [newTiles, newPlayer1, newPlayer2] = updatePlayersPosition(currentGame);
@@ -108,11 +129,12 @@ timer(0, 500)
   )
   .subscribe((currentGame) => {
     game.next(currentGame);
-    // drawTiles(currentGame, ctx);
   });
 
+// ANIMATION TICKS
 interval(100)
   .pipe(
+    skipUntil(game.pipe(filter((currentGame) => currentGame.started))),
     withLatestFrom(game),
     map(([time, currentGame]) => {
       const { p1, p2 } = currentGame;
@@ -130,8 +152,12 @@ interval(100)
     game.next(currentGame);
   });
 
+////////////////////////////////
+///////// KEY PRESSES //////////
+////////////////////////////////
 const keydownP1 = fromEvent(document, 'keydown')
   .pipe(
+    skipUntil(game.pipe(filter((currentGame) => currentGame.started))),
     filter(({ key }) => Object.keys(DIRECTIONSP1).includes(key)),
     withLatestFrom(game),
     map(([currentKeydown, currentGame]) => {
@@ -148,6 +174,7 @@ const keydownP1 = fromEvent(document, 'keydown')
 
 const powersP1 = fromEvent(document, 'keydown')
   .pipe(
+    skipUntil(game.pipe(filter((currentGame) => currentGame.started))),
     filter(({ key }) => Object.keys(POWERSP1).includes(key)),
     withLatestFrom(game),
     map(([currentKeydown, currentGame]) => {
@@ -179,6 +206,7 @@ const powersP1 = fromEvent(document, 'keydown')
 
 const powersP2 = fromEvent(document, 'keydown')
   .pipe(
+    skipUntil(game.pipe(filter((currentGame) => currentGame.started))),
     filter(({ key }) => Object.keys(POWERSP2).includes(key)),
     withLatestFrom(game),
     map(([currentKeydown, currentGame]) => {
@@ -209,6 +237,7 @@ const powersP2 = fromEvent(document, 'keydown')
 
 const keydownP2 = fromEvent(document, 'keydown')
   .pipe(
+    skipUntil(game.pipe(filter((currentGame) => currentGame.started))),
     filter(({ key }) => Object.keys(DIRECTIONSP2).includes(key)),
     withLatestFrom(game),
     map(([currentKeydown, currentGame]) => {
@@ -223,7 +252,22 @@ const keydownP2 = fromEvent(document, 'keydown')
     game.next(currentGame);
   });
 
+// GAME
 game.subscribe((currentGame) => {
   drawTiles(currentGame, ctx);
   staticEffect(ctx, canvas.width, canvas.height);
 });
+
+// START EVENT
+fromEvent(canvas, 'click')
+  .pipe(
+    takeUntil(game.pipe(filter((currentGame) => currentGame.started))),
+    withLatestFrom(game),
+    map(([_, currentGame]) => ({
+      ...currentGame,
+      started: true,
+    })),
+  ).subscribe((newGame) => {
+    game.next(newGame);
+    clearCanvas();
+  });

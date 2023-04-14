@@ -71,15 +71,16 @@ const P1_START = {
   alive: true,
   image: PACMAN_I.up,
   name: 'P1',
+  points: 0,
   portal1: {
     x: 0,
-    y: 4,
+    y: 2,
     image: PORTAL1P1,
     name: 'P1P1',
     exitDirection: MOVING_DIRECTION.right,
   },
   portal2: {
-    x: 4,
+    x: 2,
     y: 0,
     image: PORTAL2P1,
     name: 'P2P1',
@@ -99,6 +100,9 @@ ENEMY3.src = './src/sprites/enemy-3.png';
 const ENEMY4 = new Image();
 ENEMY4.src = './src/sprites/enemy-4.png';
 
+const DOT = new Image();
+DOT.src = './src/sprites/dot.png';
+
 const P2_START = {
   x: 11,
   y: 9,
@@ -106,15 +110,16 @@ const P2_START = {
   alive: true,
   image: PACMAN_I.up,
   name: 'P2',
+  points: 0,
   portal1: {
     x: 0,
-    y: 6,
+    y: 1,
     image: PORTAL1P2,
     name: 'P1P2',
     exitDirection: MOVING_DIRECTION.right,
   },
   portal2: {
-    x: 6,
+    x: 1,
     y: 0,
     image: PORTAL2P2,
     name: 'P2P2',
@@ -130,6 +135,7 @@ const ENEMIES = [
     alive: true,
     image: ENEMY1,
     name: 'E1',
+    points: 0,
   },
   {
     x: 5,
@@ -138,6 +144,7 @@ const ENEMIES = [
     alive: true,
     image: ENEMY2,
     name: 'E2',
+    points: 0,
   },
   {
     x: 12,
@@ -146,6 +153,7 @@ const ENEMIES = [
     alive: true,
     image: ENEMY3,
     name: 'E3',
+    points: 0,
   },
   {
     x: 18,
@@ -154,6 +162,7 @@ const ENEMIES = [
     alive: true,
     image: ENEMY4,
     name: 'E4',
+    points: 0,
   },
 ];
 
@@ -173,4 +182,5 @@ export {
   ENEMIES,
   POWERSP1,
   POWERSP2,
+  DOT,
 };

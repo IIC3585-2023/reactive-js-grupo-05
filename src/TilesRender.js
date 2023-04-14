@@ -1,4 +1,4 @@
-import { WALL_I, SIZE, PACMAN_I, ENEMIES } from './parameters.js';
+import { WALL_I, SIZE, PACMAN_I, ENEMIES, DOT } from './parameters.js';
 
 const drawTileCharacter = (ctx, player) => {
   ctx.drawImage(player.image, player.x * SIZE, player.y * SIZE, SIZE, SIZE);
@@ -16,6 +16,9 @@ const drawTileEmpty = (ctx, column, row) => {
   ctx.fillRect(column * SIZE, row * SIZE, SIZE, SIZE);
 };
 
+const drawDot = (ctx, columnIndex, rowIndex) => {
+  ctx.drawImage(DOT, columnIndex * SIZE, rowIndex * SIZE, SIZE, SIZE);
+};
 
 const drawTile = (tile, ctx, columnIndex, rowIndex, p1, p2) => {
   switch (tile) {
@@ -55,6 +58,9 @@ const drawTile = (tile, ctx, columnIndex, rowIndex, p1, p2) => {
     case 'E4':
       drawTileCharacter(ctx, ENEMIES[3]);
       break;
+    case 2:
+      drawDot(ctx, columnIndex, rowIndex);
+      break;
     default:
       drawTileEmpty(ctx, columnIndex, rowIndex);
       break;
@@ -75,8 +81,6 @@ const staticEffect = (ctx, screenWidth, screenHeight) => {
     const g = imageData.data[i + 1];
     const b = imageData.data[i + 2];
 
-    // imageData.data[i] = g; // Swap red and green channels
-    // imageData.data[i + 1] = r;
     imageData.data[i + 2] = b * 0.8; // Darken the blue channel
 
     // Add some random noise to each color channel
