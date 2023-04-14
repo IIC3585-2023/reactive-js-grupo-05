@@ -121,21 +121,25 @@ const warpPlayerPosition = (player, tiles, portal) => {
     case MOVING_DIRECTION.right:
       newPlayer.x = portal.x + 1;
       newPlayer.y = portal.y;
+      newPlayer.points += newTiles[portal.y][portal.x + 1] === 2;
       newTiles[portal.y][portal.x + 1] = newPlayer.name;
       return [newTiles, newPlayer];
     case MOVING_DIRECTION.left:
       newPlayer.x = portal.x - 1;
       newPlayer.y = portal.y;
+      newPlayer.points += newTiles[portal.y][portal.x - 1] === 2;
       newTiles[portal.y][portal.x - 1] = newPlayer.name;
       return [newTiles, newPlayer];
     case MOVING_DIRECTION.up:
       newPlayer.y = portal.y - 1;
       newPlayer.x = portal.x;
+      newPlayer.points += newTiles[portal.y - 1][portal.x] === 2;
       newTiles[portal.y - 1][portal.x] = newPlayer.name;
       return [newTiles, newPlayer];
     case MOVING_DIRECTION.down:
       newPlayer.y = portal.y + 1;
       newPlayer.x = portal.x;
+      newPlayer.points += newTiles[portal.y + 1][portal.x] === 2;
       newTiles[portal.y + 1][portal.x] = newPlayer.name;
       return [newTiles, newPlayer];
     default:
