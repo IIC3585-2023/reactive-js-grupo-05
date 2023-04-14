@@ -10,10 +10,7 @@ import {
   ENEMIES,
 } from './parameters.js';
 import {
-  drawTiles,
-  tiles,
-  staticEffect,
-  TOTAL_POINTS,
+  drawTiles, tiles, staticEffect, TOTAL_POINTS,
 } from './TilesRender.js';
 import {
   updatePlayersPosition,
@@ -22,17 +19,10 @@ import {
 } from './TilesHandler.js';
 
 const {
-  fromEvent,
-  filter,
-  timer,
-  BehaviorSubject,
-  interval,
+  fromEvent, filter, timer, BehaviorSubject, interval,
 } = rxjs;
 const {
-  withLatestFrom,
-  map,
-  takeUntil,
-  skipUntil,
+  withLatestFrom, map, takeUntil, skipUntil,
 } = rxjs.operators;
 
 const canvas = document.getElementById('game');
@@ -97,11 +87,12 @@ const resizeCanvas = () => {
   canvas.style.height = `${canvas.height}px`;
   ctx.scale(scale, scale);
 };
-
 window.addEventListener('resize', resizeCanvas);
-resizeCanvas();
-drawStart();
-ctx.fillStyle = 'black';
+window.addEventListener('load', () => {
+  resizeCanvas();
+  drawStart();
+  // ctx.fillStyle = 'black';
+});
 
 // --------------------------------------------------------------
 // --------------------------------------------------------------
@@ -131,8 +122,8 @@ const checkGameOver = (currentGame) => {
     return true;
   }
   const totalPoints = p1.points
-                      + p2.points
-                      + enemies.reduce((total, { points }) => total + points, 0);
+    + p2.points
+    + enemies.reduce((total, { points }) => total + points, 0);
   return totalPoints === TOTAL_POINTS;
 };
 
@@ -162,7 +153,8 @@ timer(0, 500)
         enemies: newEnemies,
       };
     }),
-  ).subscribe((currentGame) => {
+  )
+  .subscribe((currentGame) => {
     game.next(currentGame);
   });
 
@@ -223,7 +215,8 @@ fromEvent(document, 'keydown')
           p1: { ...p1, portal1: newPortal },
           tiles: newTiles,
         };
-      } if (POWERSP1[currentKeydown.key] === 'portal2') {
+      }
+      if (POWERSP1[currentKeydown.key] === 'portal2') {
         [newTiles, newPortal] = shootPortal(p1, p1.portal2, tiles);
         return {
           ...currentGame,
@@ -255,7 +248,8 @@ fromEvent(document, 'keydown')
           p2: { ...p2, portal1: newPortal },
           tiles: newTiles,
         };
-      } if (POWERSP2[currentKeydown.key] === 'portal2') {
+      }
+      if (POWERSP2[currentKeydown.key] === 'portal2') {
         [newTiles, newPortal] = shootPortal(p2, p2.portal2, tiles);
         return {
           ...currentGame,
@@ -303,15 +297,18 @@ fromEvent(canvas, 'click')
       ...currentGame,
       started: true,
     })),
-  ).subscribe((newGame) => {
+  )
+  .subscribe((newGame) => {
     game.next(newGame);
     clearCanvas();
   });
 
 // GAME OVER EVENT
 
-game.pipe(filter((currentGame) => currentGame.over)).subscribe((currentGame) => {
-  clearCanvas();
-  drawScores(currentGame.p1, currentGame.p2);
-  staticEffect(ctx, canvas.width, canvas.height);
-});
+game
+  .pipe(filter((currentGame) => currentGame.over))
+  .subscribe((currentGame) => {
+    clearCanvas();
+    drawScores(currentGame.p1, currentGame.p2);
+    staticEffect(ctx, canvas.width, canvas.height);
+  });
