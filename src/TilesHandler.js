@@ -1,7 +1,38 @@
 import { MOVING_DIRECTION } from './parameters.js';
 
+const getOppositeDir = (direction) => {
+  switch (direction) {
+    case MOVING_DIRECTION.up:
+      return MOVING_DIRECTION.down;
+    case MOVING_DIRECTION.down:
+      return MOVING_DIRECTION.up;
+    case MOVING_DIRECTION.left:
+      return MOVING_DIRECTION.right;
+    case MOVING_DIRECTION.right:
+      return MOVING_DIRECTION.left;
+    default:
+      return null;
+  }
+};
+
+const getPossibleDir = ({ x, y }, tiles) => {
+  const possibleDirections = [];
+  if (tiles[y][x + 1] !== 1) {
+    possibleDirections.push(MOVING_DIRECTION.right);
+  }
+  if (tiles[y][x - 1] !== 1) {
+    possibleDirections.push(MOVING_DIRECTION.left);
+  }
+  if (tiles[y - 1][x] !== 1) {
+    possibleDirections.push(MOVING_DIRECTION.up);
+  }
+  if (tiles[y + 1][x] !== 1) {
+    possibleDirections.push(MOVING_DIRECTION.down);
+  }
+  return possibleDirections;
+};
+
 const didCollideWithEnvironment = ({ x, y, direction }, tiles) => {
-  // console.log(tiles, y, x);
   switch (direction) {
     case MOVING_DIRECTION.right:
       return tiles[y][x + 1] !== 0;
@@ -17,7 +48,6 @@ const didCollideWithEnvironment = ({ x, y, direction }, tiles) => {
 };
 
 const didCollideWithDot = ({ x, y, direction }, tiles) => {
-  // console.log(tiles, y, x, direction);
   switch (direction) {
     case MOVING_DIRECTION.right:
       return tiles[y][x + 1] === 2;
@@ -61,13 +91,11 @@ const collideWithPacman = ({ x, y, direction }, tiles, player) => {
       x: -1,
       y: -1,
     };
-    // console.log('Colision pacman fantasma', player.name);
   }
   return [newTiles, newPlayer];
 };
 
 const didCollideWithPortal = ({ x, y, direction }, tiles, portal) => {
-  // console.log(portal2.name, tiles[y - 1][x]);
   switch (direction) {
     case MOVING_DIRECTION.right:
       return tiles[y][x + 1] === portal.name;
@@ -168,7 +196,6 @@ const updatePlayersPosition = ({ p1, p2, tiles }) => {
 const updateEnemyPosition = (enemy, tiles, p1, p2) => {
   let newTiles = tiles;
   const newEnemy = enemy;
-  // console.log(enemy, p1, p2);
   const pointColision = didCollideWithDot(newEnemy, newTiles);
   if (!didCollideWithEnvironment(newEnemy, newTiles) || pointColision) {
     newEnemy.points += pointColision;
@@ -191,14 +218,15 @@ const updateEnemyPosition = (enemy, tiles, p1, p2) => {
         break;
     }
     newTiles[newEnemy.y][newEnemy.x] = newEnemy.name;
+    const oposite = getOppositeDir(newEnemy.direction);
+    const possibleDirections = getPossibleDir(newEnemy, newTiles).filter((dir) => dir !== oposite);
+    newEnemy.direction = possibleDirections[Math.floor(Math.random() * possibleDirections.length)];
     return [newTiles, newEnemy, p1, p2];
   }
   let newP1;
   let newP2;
   [newTiles, newP1] = collideWithPacman(enemy, newTiles, p1);
   [newTiles, newP2] = collideWithPacman(enemy, newTiles, p2);
-  // console.log('test', newP2);
-
   newEnemy.direction = MOVING_DIRECTION[
     Object.keys(MOVING_DIRECTION)[Math.floor(Math.random() * 4)]
   ];
@@ -298,27 +326,7 @@ const shootPortal = (player, portal, tiles) => {
     newPortal.x = newX;
     newPortal.y = newY;
     newTiles[newY][newX] = newPortal.name;
-
-    switch (player.direction) {
-      case MOVING_DIRECTION.up:
-        newPortal.exitDirection = MOVING_DIRECTION.down;
-        break;
-
-      case MOVING_DIRECTION.down:
-        newPortal.exitDirection = MOVING_DIRECTION.up;
-        break;
-
-      case MOVING_DIRECTION.left:
-        newPortal.exitDirection = MOVING_DIRECTION.right;
-        break;
-
-      case MOVING_DIRECTION.right:
-        newPortal.exitDirection = MOVING_DIRECTION.left;
-        break;
-
-      default:
-        break;
-    }
+    newPortal.exitDirection = getOppositeDir(player.direction);
   }
   return [newTiles, newPortal];
 };

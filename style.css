@@ -11,11 +11,16 @@
   /* esto quita el antialiasing */
 }
 
+span {
+  color: white;
+  size: 100px;
+}
+
 body {
   /* background-color: black; */
+  animation: glitch 10s ease-in-out infinite;
   background: url("background.gif") no-repeat center center fixed;
   background-size: cover;
-  animation: glitch 10s ease-in-out infinite;
   padding: 0;
   margin: 0;
   display: flex;

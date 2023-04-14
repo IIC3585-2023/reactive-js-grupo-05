@@ -67,20 +67,20 @@ PORTAL2P2.src = './src/sprites/portal-p2-orange.png';
 const P1_START = {
   x: 1,
   y: 1,
-  direction: MOVING_DIRECTION.right,
+  direction: MOVING_DIRECTION.left,
   alive: true,
   image: PACMAN_I.up,
   name: 'P1',
   points: 0,
   portal1: {
     x: 0,
-    y: 2,
+    y: 1,
     image: PORTAL1P1,
     name: 'P1P1',
     exitDirection: MOVING_DIRECTION.right,
   },
   portal2: {
-    x: 2,
+    x: 1,
     y: 0,
     image: PORTAL2P1,
     name: 'P2P1',
@@ -104,26 +104,26 @@ const DOT = new Image();
 DOT.src = './src/sprites/dot.png';
 
 const P2_START = {
-  x: 11,
-  y: 9,
+  x: 18,
+  y: 17,
   direction: MOVING_DIRECTION.right,
   alive: true,
-  image: PACMAN_I.up,
+  image: PACMAN_I.right,
   name: 'P2',
   points: 0,
   portal1: {
-    x: 0,
-    y: 1,
+    x: 18,
+    y: 18,
     image: PORTAL1P2,
     name: 'P1P2',
-    exitDirection: MOVING_DIRECTION.right,
+    exitDirection: MOVING_DIRECTION.up,
   },
   portal2: {
-    x: 1,
-    y: 0,
+    x: 19,
+    y: 17,
     image: PORTAL2P2,
     name: 'P2P2',
-    exitDirection: MOVING_DIRECTION.down,
+    exitDirection: MOVING_DIRECTION.left,
   },
 };
 
@@ -156,8 +156,8 @@ const ENEMIES = [
     points: 0,
   },
   {
-    x: 18,
-    y: 17,
+    x: 11,
+    y: 9,
     direction: MOVING_DIRECTION.right,
     alive: true,
     image: ENEMY4,
