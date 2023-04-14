@@ -20,6 +20,7 @@ const collideWithPacman = ({ x, y, direction }, tiles, player) => {
   let newX = x;
   let newY = y;
   let newPlayer = player;
+  const newTiles = tiles;
   switch (direction) {
     case MOVING_DIRECTION.right:
       newX += 1;
@@ -37,6 +38,7 @@ const collideWithPacman = ({ x, y, direction }, tiles, player) => {
       break;
   }
   if (tiles[newY][newX] === newPlayer.name) {
+    newTiles[player.y][player.x] = 0;
     newPlayer = {
       ...newPlayer,
       alive: false,
@@ -45,7 +47,7 @@ const collideWithPacman = ({ x, y, direction }, tiles, player) => {
     };
     // console.log('Colision pacman fantasma', player.name);
   }
-  return newPlayer;
+  return [newTiles, newPlayer];
 };
 
 const didCollideWithPortal = ({ x, y, direction }, tiles, portal) => {
@@ -146,7 +148,7 @@ const updatePlayersPosition = ({ p1, p2, tiles }) => {
 };
 
 const updateEnemyPosition = (enemy, tiles, p1, p2) => {
-  const newTiles = tiles;
+  let newTiles = tiles;
   const newEnemy = enemy;
   // console.log(enemy, p1, p2);
   if (!didCollideWithEnvironment(newEnemy, newTiles)) {
@@ -171,8 +173,10 @@ const updateEnemyPosition = (enemy, tiles, p1, p2) => {
     newTiles[newEnemy.y][newEnemy.x] = newEnemy.name;
     return [newTiles, newEnemy, p1, p2];
   }
-  const newP1 = collideWithPacman(enemy, tiles, p1);
-  const newP2 = collideWithPacman(enemy, tiles, p2);
+  let newP1;
+  let newP2;
+  [newTiles, newP1] = collideWithPacman(enemy, newTiles, p1);
+  [newTiles, newP2] = collideWithPacman(enemy, newTiles, p2);
   // console.log('test', newP2);
 
   newEnemy.direction = MOVING_DIRECTION[
