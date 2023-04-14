@@ -6,9 +6,10 @@ import {
   P1_START,
   P2_START,
   PACMAN_I,
+  ENEMIES,
 } from './parameters.js';
 import { drawTiles, tiles, staticEffect } from './TilesRender.js';
-import { updatePlayersPosition } from './TilesHandler.js';
+import { updatePlayersPosition, updateEnemiesPosition } from './TilesHandler.js';
 
 const {
   fromEvent, merge, filter, pipe, timer, BehaviorSubject, interval,
@@ -60,6 +61,10 @@ resizeCanvas();
 tiles[P1_START.y][P1_START.x] = P1_START.name;
 tiles[P2_START.y][P2_START.x] = P2_START.name;
 
+for (let i = 0; i < ENEMIES.length; i += 1) {
+  tiles[ENEMIES[i].y][ENEMIES[i].x] = ENEMIES[i].name;
+}
+
 tiles[P1_START.portal1.y][P1_START.portal1.x] = 'P1P1';
 tiles[P1_START.portal2.y][P1_START.portal2.x] = 'P2P1';
 
@@ -70,24 +75,28 @@ const game = new BehaviorSubject({
   tiles,
   p1: P1_START,
   p2: P2_START,
+  enemies: ENEMIES,
 });
 
 timer(0, 500)
   .pipe(
     withLatestFrom(game),
     map(([_, currentGame]) => {
-      const [newTiles, newPlayer1, newPlayer2] = updatePlayersPosition(currentGame);
-      // test
+      let [newTiles, newPlayer1, newPlayer2] = updatePlayersPosition(currentGame);
+      let newEnemies = [];
+      [newTiles, newEnemies, newPlayer1, newPlayer2] = updateEnemiesPosition({
+        ...currentGame, tiles: newTiles, p1: newPlayer1, p2: newPlayer2,
+      });
       return {
         ...currentGame,
         tiles: newTiles,
         p1: newPlayer1,
         p2: newPlayer2,
+        enemies: newEnemies,
       };
     }),
   )
   .subscribe((currentGame) => {
-    // console.log(updatePlayersPosition(currentGame));
     game.next(currentGame);
     // drawTiles(currentGame, ctx);
   });
@@ -108,7 +117,6 @@ interval(100)
     }),
   )
   .subscribe((currentGame) => {
-    // drawTiles(currentGame, ctx);
     game.next(currentGame);
   });
 
@@ -141,7 +149,6 @@ const keydownP2 = fromEvent(document, 'keydown')
     }),
   )
   .subscribe((currentGame) => {
-    // drawTiles(currentGame, ctx);
     game.next(currentGame);
   });
 

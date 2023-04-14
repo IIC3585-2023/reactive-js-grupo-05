@@ -1,7 +1,7 @@
-import { WALL_I, SIZE, PACMAN_I } from './parameters.js';
+import { WALL_I, SIZE, PACMAN_I, ENEMIES } from './parameters.js';
 
-const drawTilePacman = (ctx, column, row, player) => {
-  ctx.drawImage(player.image, column * SIZE, row * SIZE, SIZE, SIZE);
+const drawTileCharacter = (ctx, player) => {
+  ctx.drawImage(player.image, player.x * SIZE, player.y * SIZE, SIZE, SIZE);
 };
 
 const drawTileWall = (ctx, column, row) => {
@@ -16,6 +16,7 @@ const drawTileEmpty = (ctx, column, row) => {
   ctx.fillRect(column * SIZE, row * SIZE, SIZE, SIZE);
 };
 
+
 const drawTile = (tile, ctx, columnIndex, rowIndex, p1, p2) => {
   switch (tile) {
     case 0:
@@ -25,7 +26,7 @@ const drawTile = (tile, ctx, columnIndex, rowIndex, p1, p2) => {
       drawTileWall(ctx, columnIndex, rowIndex);
       break;
     case 'P1':
-      drawTilePacman(ctx, columnIndex, rowIndex, p1);
+      drawTileCharacter(ctx, p1);
       break;
     case 'P1P1':
       drawPortal(ctx, columnIndex, rowIndex, p1.portal1.image);
@@ -40,7 +41,19 @@ const drawTile = (tile, ctx, columnIndex, rowIndex, p1, p2) => {
       drawPortal(ctx, columnIndex, rowIndex, p2.portal2.image);
       break;
     case 'P2':
-      drawTilePacman(ctx, columnIndex, rowIndex, p2);
+      drawTileCharacter(ctx, p2);
+      break;
+    case 'E1':
+      drawTileCharacter(ctx, ENEMIES[0]);
+      break;
+    case 'E2':
+      drawTileCharacter(ctx, ENEMIES[1]);
+      break;
+    case 'E3':
+      drawTileCharacter(ctx, ENEMIES[2]);
+      break;
+    case 'E4':
+      drawTileCharacter(ctx, ENEMIES[3]);
       break;
     default:
       drawTileEmpty(ctx, columnIndex, rowIndex);
@@ -62,9 +75,9 @@ const staticEffect = (ctx, screenWidth, screenHeight) => {
     const g = imageData.data[i + 1];
     const b = imageData.data[i + 2];
 
-    imageData.data[i] = g; // Swap red and green channels
-    imageData.data[i + 1] = r;
-    imageData.data[i + 2] = b * 0.5; // Darken the blue channel
+    // imageData.data[i] = g; // Swap red and green channels
+    // imageData.data[i + 1] = r;
+    imageData.data[i + 2] = b * 0.8; // Darken the blue channel
 
     // Add some random noise to each color channel
     const noise = Math.random() * 20 - 10;
