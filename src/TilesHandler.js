@@ -20,6 +20,7 @@ const collideWithPacman = ({ x, y, direction }, tiles, player) => {
   let newX = x;
   let newY = y;
   let newPlayer = player;
+  const newTiles = tiles;
   switch (direction) {
     case MOVING_DIRECTION.right:
       newX += 1;
@@ -37,6 +38,7 @@ const collideWithPacman = ({ x, y, direction }, tiles, player) => {
       break;
   }
   if (tiles[newY][newX] === newPlayer.name) {
+    newTiles[player.y][player.x] = 0;
     newPlayer = {
       ...newPlayer,
       alive: false,
@@ -45,7 +47,7 @@ const collideWithPacman = ({ x, y, direction }, tiles, player) => {
     };
     // console.log('Colision pacman fantasma', player.name);
   }
-  return newPlayer;
+  return [newTiles, newPlayer];
 };
 
 const didCollideWithPortal = ({ x, y, direction }, tiles, portal) => {
@@ -146,7 +148,7 @@ const updatePlayersPosition = ({ p1, p2, tiles }) => {
 };
 
 const updateEnemyPosition = (enemy, tiles, p1, p2) => {
-  const newTiles = tiles;
+  let newTiles = tiles;
   const newEnemy = enemy;
   // console.log(enemy, p1, p2);
   if (!didCollideWithEnvironment(newEnemy, newTiles)) {
@@ -171,8 +173,10 @@ const updateEnemyPosition = (enemy, tiles, p1, p2) => {
     newTiles[newEnemy.y][newEnemy.x] = newEnemy.name;
     return [newTiles, newEnemy, p1, p2];
   }
-  const newP1 = collideWithPacman(enemy, tiles, p1);
-  const newP2 = collideWithPacman(enemy, tiles, p2);
+  let newP1;
+  let newP2;
+  [newTiles, newP1] = collideWithPacman(enemy, newTiles, p1);
+  [newTiles, newP2] = collideWithPacman(enemy, newTiles, p2);
   // console.log('test', newP2);
 
   newEnemy.direction = MOVING_DIRECTION[
@@ -199,10 +203,169 @@ const updateEnemiesPosition = (game) => {
   }
   return [newTiles, newEnemies, newP1, newP2];
 };
+//
+// const getWallCoords = (maze, player) => {
+//   let wallRow;
+//   let wallCol;
+//
+//   switch (player.direction) {
+//     case 'up':
+//       wallRow = player.y;
+//       for (let i = player.y - 1; i >= 0; i -= 1) {
+//         if (maze[i][player.x] === 1) {
+//           wallRow = i;
+//           break;
+//         }
+//       }
+//       wallCol = player.x;
+//       break;
+//
+//     case 'down':
+//       wallRow = player.y;
+//       for (let i = player.y + 1; i < maze.length; i += 1) {
+//         if (maze[i][player.x] === 1) {
+//           wallRow = i;
+//           break;
+//         }
+//       }
+//       wallCol = player.x;
+//       break;
+//
+//     case 'left':
+//       wallCol = player.x;
+//       for (let j = player.x - 1; j >= 0; j -= 1) {
+//         if (maze[player.y][j] === 1) {
+//           wallCol = j;
+//           break;
+//         }
+//       }
+//       wallRow = player.y;
+//       break;
+//
+//     case 'right':
+//       wallCol = player.x;
+//       for (let j = player.x + 1; j < maze[player.y].length; j += 1) {
+//         if (maze[player.y][j] === 1) {
+//           wallCol = j;
+//           break;
+//         }
+//       }
+//       wallRow = player.y;
+//       break;
+//
+//     default:
+//       return null;
+//   }
+//
+//   return [wallRow, wallCol];
+// };
+
+const getWallCoords = (tiles, player) => {
+  let wallRow = player.y;
+  let wallCol = player.x;
+
+  switch (player.direction) {
+    case MOVING_DIRECTION.up:
+      for (let i = player.y - 1; i >= 0; i -= 1) {
+        if (tiles[i][player.x] === 1) {
+          wallRow = i;
+          break;
+        }
+        if (tiles[i][player.x] !== 0) {
+          return null;
+        }
+      }
+      break;
+
+    case MOVING_DIRECTION.down:
+      for (let i = player.y + 1; i < tiles.length; i += 1) {
+        if (tiles[i][player.x] === 1) {
+          wallRow = i;
+          break;
+        }
+        if (tiles[i][player.x] !== 0) {
+          return null;
+        }
+      }
+      break;
+
+    case MOVING_DIRECTION.left:
+      for (let j = player.x - 1; j >= 0; j -= 1) {
+        if (tiles[player.y][j] === 1) {
+          wallCol = j;
+          break;
+        }
+        if (tiles[player.y][j] !== 0) {
+          return null;
+        }
+      }
+      break;
+
+    case MOVING_DIRECTION.right:
+      for (let j = player.x + 1; j < tiles[player.y].length; j += 1) {
+        if (tiles[player.y][j] === 1) {
+          wallCol = j;
+          break;
+        }
+        if (tiles[player.y][j] !== 0) {
+          return null;
+        }
+      }
+      break;
+
+    default:
+      return null;
+  }
+
+  return [wallRow, wallCol];
+};
+
+const shootPortal = (player, portal, tiles) => {
+  const newTiles = tiles;
+  const newPortal = portal;
+
+  const newCoords = getWallCoords(tiles, player);
+  if (newCoords) {
+    const newY = newCoords[0];
+    const newX = newCoords[1];
+    // console.log(newPortal, newTiles[newPortal.y][newPortal.x]);
+    console.log(newCoords, newX, newY, newTiles);
+
+    newTiles[newPortal.y][portal.x] = 1;
+
+    newPortal.x = newX;
+    newPortal.y = newY;
+    newTiles[newY][newX] = newPortal.name;
+
+    switch (player.direction) {
+      case MOVING_DIRECTION.up:
+        newPortal.exitDirection = MOVING_DIRECTION.down;
+        break;
+
+      case MOVING_DIRECTION.down:
+        newPortal.exitDirection = MOVING_DIRECTION.up;
+        break;
+
+      case MOVING_DIRECTION.left:
+        newPortal.exitDirection = MOVING_DIRECTION.right;
+        break;
+
+      case MOVING_DIRECTION.right:
+        newPortal.exitDirection = MOVING_DIRECTION.left;
+        break;
+
+      default:
+        break;
+    }
+  }
+  return [newTiles, newPortal];
+};
 
 export {
   didCollideWithEnvironment,
   updatePlayerPosition,
   updatePlayersPosition,
   updateEnemiesPosition,
+  getWallCoords,
+  shootPortal,
 };
