@@ -87,6 +87,7 @@ const resizeCanvas = () => {
   canvas.style.height = `${canvas.height}px`;
   ctx.scale(scale, scale);
 };
+
 window.addEventListener('resize', resizeCanvas);
 window.addEventListener('load', () => {
   resizeCanvas();
@@ -95,6 +96,7 @@ window.addEventListener('load', () => {
 });
 
 // --------------------------------------------------------------
+// ------------------------- GAME -------------------------------
 // --------------------------------------------------------------
 
 tiles[P1_START.y][P1_START.x] = P1_START.name;
@@ -132,30 +134,30 @@ timer(0, 500)
   .pipe(
     skipUntil(game.pipe(filter((currentGame) => currentGame.started))),
     takeUntil(game.pipe(filter((currentGame) => currentGame.over))),
-    withLatestFrom(game),
-    map(([, currentGame]) => {
-      if (checkGameOver(currentGame)) {
-        return { ...currentGame, over: true };
-      }
-      let [newTiles, newPlayer1, newPlayer2] = updatePlayersPosition(currentGame);
-      let newEnemies = [];
-      [newTiles, newEnemies, newPlayer1, newPlayer2] = updateEnemiesPosition({
-        ...currentGame,
-        tiles: newTiles,
-        p1: newPlayer1,
-        p2: newPlayer2,
-      });
-      return {
-        ...currentGame,
-        tiles: newTiles,
-        p1: newPlayer1,
-        p2: newPlayer2,
-        enemies: newEnemies,
-      };
-    }),
-  )
-  .subscribe((currentGame) => {
-    game.next(currentGame);
+    withLatestFrom(game)
+  ).subscribe(([, currentGame]) => {
+    if (checkGameOver(currentGame)) {
+      game.next({ ...currentGame, over: true });
+      return;
+    }
+
+    let [newTiles, newPlayer1, newPlayer2] = updatePlayersPosition(currentGame);
+    let newEnemies = [];
+
+    [newTiles, newEnemies, newPlayer1, newPlayer2] = updateEnemiesPosition({
+      ...currentGame,
+      tiles: newTiles,
+      p1: newPlayer1,
+      p2: newPlayer2,
+    });
+
+    game.next({
+      ...currentGame,
+      tiles: newTiles,
+      p1: newPlayer1,
+      p2: newPlayer2,
+      enemies: newEnemies,
+    });
   });
 
 // ANIMATION TICKS
@@ -164,8 +166,9 @@ interval(100)
     skipUntil(game.pipe(filter((currentGame) => currentGame.started))),
     takeUntil(game.pipe(filter((currentGame) => currentGame.over))),
     withLatestFrom(game),
-    map(([time, currentGame]) => {
-      const { p1, p2 } = currentGame;
+  )
+  .subscribe(([time, currentGame]) => {
+    const { p1, p2 } = currentGame;
       if (time % 2 === 0) {
         p1.image = PACMAN_I[p1.direction];
         p2.image = PACMAN_I[p2.direction];
@@ -173,119 +176,69 @@ interval(100)
         p1.image = PACMAN_I.circle;
         p2.image = PACMAN_I.circle;
       }
-      return { ...currentGame, p1, p2 };
-    }),
-  )
-  .subscribe((currentGame) => {
-    game.next(currentGame);
+      game.next({ ...currentGame, p1, p2 });
   });
 
-fromEvent(document, 'keydown')
-  .pipe(
-    takeUntil(game.pipe(filter((currentGame) => currentGame.over))),
-    skipUntil(game.pipe(filter((currentGame) => currentGame.started))),
-    filter(({ key }) => Object.keys(DIRECTIONSP1).includes(key)),
-    withLatestFrom(game),
-    map(([currentKeydown, currentGame]) => {
-      const { p1 } = currentGame;
-      return {
-        ...currentGame,
-        p1: { ...p1, direction: DIRECTIONSP1[currentKeydown.key] },
-      };
-    }),
-  )
-  .subscribe((currentGame) => {
-    game.next(currentGame);
-  });
+const keydown = fromEvent(document, 'keydown')
+                  .pipe(
+                    takeUntil(game.pipe(filter((currentGame) => currentGame.over))),
+                    skipUntil(game.pipe(filter((currentGame) => currentGame.started))),
+                    withLatestFrom(game));
 
-fromEvent(document, 'keydown')
-  .pipe(
-    takeUntil(game.pipe(filter((currentGame) => currentGame.over))),
-    skipUntil(game.pipe(filter((currentGame) => currentGame.started))),
-    filter(({ key }) => Object.keys(POWERSP1).includes(key)),
-    withLatestFrom(game),
-    map(([currentKeydown, currentGame]) => {
-      const { p1, tiles } = currentGame;
-      let newTiles;
-      let newPortal;
-      if (POWERSP1[currentKeydown.key] === 'portal1') {
-        [newTiles, newPortal] = shootPortal(p1, p1.portal1, tiles);
-        return {
-          ...currentGame,
-          p1: { ...p1, portal1: newPortal },
-          tiles: newTiles,
-        };
-      }
-      if (POWERSP1[currentKeydown.key] === 'portal2') {
-        [newTiles, newPortal] = shootPortal(p1, p1.portal2, tiles);
-        return {
-          ...currentGame,
-          p1: { ...p1, portal2: newPortal },
-          tiles: newTiles,
-        };
-      }
-      return currentGame;
-    }),
-  )
-  .subscribe((currentGame) => {
-    game.next(currentGame);
-  });
+// player 1 movement
+keydown.pipe(filter(([{ key }, _]) => Object.keys(DIRECTIONSP1).includes(key)))
+        .subscribe(([currentKeydown, currentGame]) => {
+    const { p1 } = currentGame;
+    game.next({
+      ...currentGame,
+      p1: { ...p1, direction: DIRECTIONSP1[currentKeydown.key] },
+    });
+  })
 
-fromEvent(document, 'keydown')
-  .pipe(
-    takeUntil(game.pipe(filter((currentGame) => currentGame.over))),
-    skipUntil(game.pipe(filter((currentGame) => currentGame.started))),
-    filter(({ key }) => Object.keys(POWERSP2).includes(key)),
-    withLatestFrom(game),
-    map(([currentKeydown, currentGame]) => {
-      const { p2, tiles } = currentGame;
-      let newTiles;
-      let newPortal;
-      if (POWERSP2[currentKeydown.key] === 'portal1') {
-        [newTiles, newPortal] = shootPortal(p2, p2.portal1, tiles);
-        return {
-          ...currentGame,
-          p2: { ...p2, portal1: newPortal },
-          tiles: newTiles,
-        };
-      }
-      if (POWERSP2[currentKeydown.key] === 'portal2') {
-        [newTiles, newPortal] = shootPortal(p2, p2.portal2, tiles);
-        return {
-          ...currentGame,
-          p2: { ...p2, portal2: newPortal },
-          tiles: newTiles,
-        };
-      }
-      return currentGame;
-    }),
-  )
-  .subscribe((currentGame) => {
-    game.next(currentGame);
-  });
+// player 2 movement
+keydown.pipe(filter(([{ key }, _]) => Object.keys(DIRECTIONSP2).includes(key)))
+        .subscribe(([currentKeydown, currentGame]) => {
+    const { p2 } = currentGame;
+    game.next({
+      ...currentGame,
+      p2: { ...p2, direction: DIRECTIONSP2[currentKeydown.key] },
+    });
+  })
 
-fromEvent(document, 'keydown')
-  .pipe(
-    takeUntil(game.pipe(filter((currentGame) => currentGame.over))),
-    skipUntil(game.pipe(filter((currentGame) => currentGame.started))),
-    filter(({ key }) => Object.keys(DIRECTIONSP2).includes(key)),
-    withLatestFrom(game),
-    map(([currentKeydown, currentGame]) => {
-      const { p2 } = currentGame;
-      return {
-        ...currentGame,
-        p2: { ...p2, direction: DIRECTIONSP2[currentKeydown.key] },
-      };
-    }),
-  )
-  .subscribe((currentGame) => {
-    game.next(currentGame);
-  });
+// player 1 portal
+keydown.pipe(filter(([{ key }, _]) => Object.keys(POWERSP1).includes(key)))
+  .subscribe(([currentKeydown, currentGame]) => {
+    const { p1, tiles } = currentGame;
+    let newTiles, newPortal1, newPortal2;
+    if (POWERSP1[currentKeydown.key] === 'portal1') {
+      [newTiles, newPortal1] = shootPortal(p1, p1.portal1, tiles);
+    }
+    if (POWERSP1[currentKeydown.key] === 'portal2') {
+      [newTiles, newPortal2] = shootPortal(p1, p1.portal2, tiles);
+    }
+    game.next({
+      ...currentGame,
+      p1: { ...p1, portal1: newPortal, portal2: newPortal2 },
+      tiles: newTiles,
+    });
+});
 
-// GAME
-game.subscribe((currentGame) => {
-  drawTiles(currentGame, ctx);
-  staticEffect(ctx, canvas.width, canvas.height);
+// player 2 portal
+keydown.pipe(filter(([{ key }, _]) => Object.keys(POWERSP2).includes(key)))
+  .subscribe(([currentKeydown, currentGame]) => {
+    const { p2, tiles } = currentGame;
+    let newTiles, newPortal1, newPortal2;
+    if (POWERSP2[currentKeydown.key] === 'portal1') {
+      [newTiles, newPortal1] = shootPortal(p2, p2.portal1, tiles);
+    }
+    if (POWERSP2[currentKeydown.key] === 'portal2') {
+      [newTiles, newPortal2] = shootPortal(p2, p2.portal2, tiles);
+    }
+    game.next({
+      ...currentGame,
+      p2: { ...p2, portal1: newPortal, portal2: newPortal2 },
+      tiles: newTiles,
+    });
 });
 
 // START EVENT
@@ -304,7 +257,6 @@ fromEvent(canvas, 'click')
   });
 
 // GAME OVER EVENT
-
 game
   .pipe(filter((currentGame) => currentGame.over))
   .subscribe((currentGame) => {
@@ -312,3 +264,11 @@ game
     drawScores(currentGame.p1, currentGame.p2);
     staticEffect(ctx, canvas.width, canvas.height);
   });
+
+// GAME
+game.pipe(
+  filter((currentGame) => !currentGame.over)
+  ).subscribe((currentGame) => {
+  drawTiles(currentGame, ctx);
+  staticEffect(ctx, canvas.width, canvas.height);
+});
